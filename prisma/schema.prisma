@@ -13,18 +13,159 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserRole {
-  admin
-  user
+enum UserType {
+  REGULAR
+  ADMIN
+}
+
+enum ComponentType {
+  LABOUR
+  MATERIAL
 }
 
 model User {
   id       String   @id @default(uuid())
-  name     String
-  lastName String
   email    String   @unique
+  name     String   @db.VarChar(50)
+  lastName String   @db.VarChar(50)
   password String
-  role     UserRole @default(user)
   image    String?
+  userType UserType @default(REGULAR)
+
+  // Relations - Down
+  labourProvider   LabourProvider?
+  materialProvider MaterialProvider?
+
+  // Updates
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
 }
 
+model LabourProvider {
+  id String @id @default(uuid())
+
+  // Relations - Up
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
+
+  // Relations - Down
+  labours Labour[]
+
+  // Updates
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model MaterialProvider {
+  id String @id @default(uuid())
+
+  // Relations - Up
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
+
+  // Relations - Down
+  materials Material[] @relation("MaterialProviderMaterials")
+
+  // Updates
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model LabourCategory {
+  id   String @id @default(uuid())
+  name String @db.VarChar(100)
+
+  // Relations - Down
+  TaskName LabourName[]
+
+  // Updates
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model LabourName {
+  id   String @id @default(uuid())
+  name String @db.VarChar(100)
+  unit String @db.VarChar(50)
+
+  // Relations - Down
+  Task Labour[]
+
+  // Relations - Up
+  labourCategory   LabourCategory @relation(fields: [labourCategoryId], references: [id])
+  labourCategoryId String
+
+  // Updates
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Labour {
+  id         String   @id @default(uuid())
+  date       DateTime
+  price      Float
+  efficiency Float?
+
+  // Relations - Up
+  provider         LabourProvider @relation(fields: [labourProviderId], references: [id])
+  labourProviderId String
+  labourName       LabourName     @relation(fields: [labourNameId], references: [id])
+  labourNameId     String
+
+  // Relations - Down
+  LaborMaterialRelation LabourMaterialRelation[]
+
+  // Updates
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model MaterialName {
+  id   String @id @default(uuid())
+  name String @db.VarChar(100)
+
+  // Relations - Down
+  Material Material[]
+
+  // Updates
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Material {
+  id       String   @id @default(uuid())
+  date     DateTime
+  unit     String
+  quantity Float
+  price    Float
+
+  // Relations - Up
+  materialName   MaterialName     @relation(fields: [materialNameId], references: [id])
+  materialNameId String
+  provider       MaterialProvider @relation("MaterialProviderMaterials", fields: [providerId], references: [id])
+  providerId     String
+
+  // Relations - Down
+  LaborMaterialRelation LabourMaterialRelation[]
+
+  // Updates
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model LabourMaterialRelation {
+  id String @id @default(uuid())
+
+  // Relations - Up
+  labour     Labour   @relation(fields: [labourId], references: [id])
+  labourId   String
+  material   Material @relation(fields: [materialId], references: [id])
+  materialId String
+  quantity   Float
+
+  // Updates
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

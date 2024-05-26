@@ -1,16 +1,8 @@
 'use client';
 
-
-import Link from "next/link";
 import { Avatar } from "./Avatar";
 import { logout } from "@/actions";
 import { User } from "@/interfaces";
-import { useState } from "react";
-import { useUiStore } from "@/store";
-import { ChangeObraModal } from "./ChangeObraModal";
-import { TopMenuIcon } from "./TopMenuIcon";
-import { usePathname } from "next/navigation";
-import { FaExchangeAlt } from "react-icons/fa";
 
 
 interface Props {

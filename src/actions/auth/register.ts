@@ -1,7 +1,7 @@
 'use server'
 
+import { UserType } from "@/interfaces";
 import prisma from "@/lib/prisma"
-import { UserRole } from "@prisma/client";
 import bcryptjs from 'bcryptjs';
 
 interface Props {
@@ -9,10 +9,10 @@ interface Props {
     lastName: string,
     email: string,
     password: string,
-    role?: UserRole,
+    userType?: UserType,
 }
 
-export const registerUser = async ({ name, lastName, email, password, role }: Props) => {
+export const registerUser = async ({ name, lastName, email, password, userType }: Props) => {
 
 
     try {
@@ -21,7 +21,7 @@ export const registerUser = async ({ name, lastName, email, password, role }: Pr
             lastName: lastName,
             email: email.toLowerCase(),
             password: bcryptjs.hashSync(password),
-            role: role ? role : 'admin',
+            userType: userType ? userType : 'REGULAR',
         };
 
         const user = await prisma.user.create({
@@ -31,7 +31,7 @@ export const registerUser = async ({ name, lastName, email, password, role }: Pr
                 name: true,
                 lastName: true,
                 email: true,
-                role: true,
+                userType: true,
             }
         });
 
