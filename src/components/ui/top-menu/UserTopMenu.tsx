@@ -9,7 +9,7 @@ interface Props {
   user: User,
 }
 
-export const TopMenu = ({ user }: Props) => {
+export const UserTopMenu = ({ user }: Props) => {
 
   return (
 

@@ -1,5 +1,6 @@
-import { TopMenu } from "@/components";
+import { GuestTopMenu, UserTopMenu } from "@/components";
 import { auth } from "@/auth.config";
+import { User } from "@/interfaces";
 
 export default async function MatecLayout({
     children
@@ -9,15 +10,15 @@ export default async function MatecLayout({
 
     const session = await auth()
 
-    if (!session?.user ) {
-        return null
-    }
-
     return (
 
         <main>
 
-            <TopMenu user={session.user}/>
+            {
+                session
+                    ? <UserTopMenu user={session.user as User} />
+                    : <GuestTopMenu />
+            }
 
             <div className="flex flex-col items-center justify-center">
                 <div className="container px-4 py-4">

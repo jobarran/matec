@@ -14,13 +14,11 @@ export const authConfig: NextAuthConfig = {
 
         authorized({ auth, request: { nextUrl } }) {
             const isLoggedIn = !!auth?.user;
-            const isOnWeb = nextUrl.pathname.startsWith('/');
+            const isOnWeb = nextUrl.pathname.startsWith('/user') || nextUrl.pathname.startsWith('/admin');
             if (isOnWeb) {
               if (isLoggedIn) return true;
               return false; // Redirect unauthenticated users to login page
-            } else if (isLoggedIn) {
-              return Response.redirect(new URL('/', nextUrl));
-            }
+            } 
             return true;
           },
 
@@ -33,7 +31,6 @@ export const authConfig: NextAuthConfig = {
         },
         
         session({ session, token, user }) {
-            // console.log({session, token, user})
             session.user = token.data as any
             return session
         }

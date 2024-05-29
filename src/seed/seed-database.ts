@@ -143,6 +143,7 @@ async function main() {
             price: price,
             labourNameId: foundLabourName.id,
             labourProviderId: labourProvider.id,
+            efficiency: 0
           },
         });
 
